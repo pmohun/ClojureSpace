@@ -12,7 +12,7 @@
 "Breaks a vector into it's respective scalar components along the x and y axis. Accepts a vector of length 2, with the magnitude in the first position and the angle from the x axis in the second. Assumes cartesian coordinates."
 [c]
 (let [mag (first c) 
-      theta (degrees2radians (second c))
+      theta (Math/toRadians (second c))
 ; return a vector with the x and y components, respectively
       x (* mag (Math/cos theta)) 
       y (* mag (Math/sin theta))]
@@ -47,13 +47,47 @@
       theta (resultant-direction [x y])]
       [R theta]))
 
-(defn test-fxn
-([c]
-(map vector-components c)))
-;(loop [i count (map results)] 
-;(while (>= i 0) 
-;(dec i) 
-;(map + results))))))
+
+(defn compute-components
+;; If one arguments is passed
+([c] (vector-components c))
+;; If multiple arguments are passed
+([c & args] 
+  (let [components (map vector-components (concat (vector c) args))]
+    (apply mapv + components))))
+      ;(mapv + components))))
+      ;(for [component components]
+      ;  (vector (reduce + (conj [] (first component))))))))
+      ;  (println "This is the component: " component
+      ;  (conj (x) (first component))))
+      ;(println x))))
+
+      
+
+      ;(print "This is a component: " component
+      ;iterate through list of vectors and add first and second values from each vector
+      ;x 0
+      ;y 0]
+      ;(doseq [component components]
+      ;  (print first component)))))
+        ;
+        ;(+ x (first component)
+        ;(+ y (second component)
+        ;(for [variable component]
+        ;  (println variable
+        ;  (conj (x) variable
+        ;  (println (x)))))))))
+          ;(conj (x) (first variable))))))))
+        ;  (print variable))))))))
+
+;; Three ways to loop
+
+(defn loop-x [vec]
+  (let [components vec]
+    (for [component components]
+      (+ (first component)
+      (+ (second component))))))
+
 
 (defn multi-vector-resultant
 "Given two or more vectors, compute the Resulant vector. Assumes vectors contain two values, each with a magnitude and direction using Cartesian coordinates."
@@ -72,11 +106,3 @@
   [R theta]
 ))
 ([c1 c2 &args] (print "Please try again with two vectors.")))
-
-(defn foo [n] (fn [i] (+ i n)))
-
-(defn Example []
-   (loop [x 10]
-      (when (> x 1)
-         (println x)
-         (recur (- x 2))))) 
