@@ -6,6 +6,7 @@
 ;; import namespaces
 (require '[clojure.repl :refer :all]) ;; import namespace with additional REPL functions
 (import '[clojure.math.numeric-tower])
+(use 'clojure.test)
 (import '[clojure.contrib.trace])
 
 (defn vector-components
@@ -18,8 +19,36 @@
       y (* mag (Math/sin theta))]
       [x y]))
 
-(defn add-first [v]
-  (let [v (first v)] (recur (next v))))
+(defn angle-adjustor
+[c]
+(let [x (first c) 
+      y (second c)
+      adjustment (if (> x 0)
+                    (if (> y 0)
+                      0 ; 1st quadrant
+                      (if (< y 0)
+                        360 ; 4th quandrant
+                        "Something is fucked up y'all."))
+                    (if (> y 0)
+                      180 ; 2nd quadrant
+                      180))] ; 3rd quadrant
+      adjustment))
+
+(defn compute-components
+"A wrapper around the vector-components function that accepts an arbitrary number of arguments and returns the respective x and y scalar components in a Cartesian coordinates system"
+;; If one arguments is passed
+([c] (vector-components c))
+;; If multiple arguments are passed
+([c & args] 
+  (let [components (map vector-components (concat (vector c) args))]
+    (apply mapv + components))))
+      
+
+(defn loop-x [vec]
+  (let [components vec]
+    (for [component components]
+      (+ (first component)
+      (+ (second component))))))
 
 (defn resultant-magnitude
 "Uses the component method to determine the magnitude of a resulant vector when given corresponding x and y components in a Cartesian coordinates system. "
@@ -28,81 +57,42 @@
       y (second c)
       R (Math/sqrt (+ (Math/pow x 2) (Math/pow y 2)))]
       ; return the magnitude of the Resultant vector
-      [R]))
+      R))
 
 (defn resultant-direction
 "Uses the x and y components of a vector to determine it's direction within a Cartesian coordinate system"
 [c]
 (let [x (first c) 
       y (second c)
-      theta (+ 180 (Math/toDegrees (Math/atan (/ y x))))]
+      angle (angle-adjustor c)
+      theta (+ angle (Math/toDegrees (Math/atan (/ y x))))]
       ; return the angle of the Resultant vector with respect to the x-axis, in radians
-      [theta]))
+      theta))
 
 (defn compute-resultant
-[c]
-(let [x (first (vector-components c))
-      y (second (vector-components c))
-      R (resultant-magnitude [x y])
-      theta (resultant-direction [x y])]
-      [R theta]))
+; Accepts a series of vectors c
+([c]
+(let [components (compute-components c) 
+      direction (resultant-direction components)
+      magnitude (resultant-magnitude components)]
+      [magnitude direction]))
+([c & args]
+(let [components (apply compute-components c args)
+      direction (resultant-direction components)
+      magnitude (resultant-magnitude components)]
+      [magnitude direction])))
 
 
-(defn compute-components
-;; If one arguments is passed
-([c] (vector-components c))
-;; If multiple arguments are passed
-([c & args] 
-  (let [components (map vector-components (concat (vector c) args))]
-    (apply mapv + components))))
-      ;(mapv + components))))
-      ;(for [component components]
-      ;  (vector (reduce + (conj [] (first component))))))))
-      ;  (println "This is the component: " component
-      ;  (conj (x) (first component))))
-      ;(println x))))
+;; -----------TESTS----------- ;;
 
-      
+(deftest test-vector-components
+  (is (= [(* 10 (Math/cos (Math/toRadians 45))) (* 10 (Math/sin (Math/toRadians 45)))] (vector-components [10 45]))))
 
-      ;(print "This is a component: " component
-      ;iterate through list of vectors and add first and second values from each vector
-      ;x 0
-      ;y 0]
-      ;(doseq [component components]
-      ;  (print first component)))))
-        ;
-        ;(+ x (first component)
-        ;(+ y (second component)
-        ;(for [variable component]
-        ;  (println variable
-        ;  (conj (x) variable
-        ;  (println (x)))))))))
-          ;(conj (x) (first variable))))))))
-        ;  (print variable))))))))
+(deftest test-resultant-magnitude
+  (is (= (Math/sqrt 8) (Math/sqrt (+ (Math/pow 2 2) (Math/pow 2 2))))))
 
-;; Three ways to loop
+(deftest test-resultant-direction
+  (is (= (Math/toDegrees (Math/atan (/ 10 20))) (resultant-direction [20 10]))))
 
-(defn loop-x [vec]
-  (let [components vec]
-    (for [component components]
-      (+ (first component)
-      (+ (second component))))))
-
-
-(defn multi-vector-resultant
-"Given two or more vectors, compute the Resulant vector. Assumes vectors contain two values, each with a magnitude and direction using Cartesian coordinates."
-([c1 c2] (let 
-  ;; Take each vector and break down into component vectors.
-  [x1 (first (vector-components c1))
-  y1 (second (vector-components c1))
-  x2 (first (vector-components c2))
-  y2 (second (vector-components c2))
-  ;; Add component vectors
-  x (+ x1 x2)
-  y (+ y1 y2)
-  ;; Calculate magnitude and direction of resultant and print as vector
-  R (resultant-magnitude [x y])
-  theta (resultant-direction [x y])]
-  [R theta]
-))
-([c1 c2 &args] (print "Please try again with two vectors.")))
+(deftest istwoplustwo
+(is (= 4 (+ 2 2))))
