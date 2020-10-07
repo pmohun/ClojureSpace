@@ -20,6 +20,7 @@
       [x y]))
 
 (defn angle-adjustor
+"An internal function that adjusts the angle theta with respect to the x-axis when converting from radians. Outputs are Longs. Useful when given x and y components of a vector and you need to calculate the angle in degrees. Called by resultant-direction."
 [c]
 (let [x (first c) 
       y (second c)
@@ -42,13 +43,7 @@
 ([c & args] 
   (let [components (map vector-components (concat (vector c) args))]
     (apply mapv + components))))
-      
 
-(defn loop-x [vec]
-  (let [components vec]
-    (for [component components]
-      (+ (first component)
-      (+ (second component))))))
 
 (defn resultant-magnitude
 "Uses the component method to determine the magnitude of a resulant vector when given corresponding x and y components in a Cartesian coordinates system. "
