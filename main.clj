@@ -77,6 +77,43 @@
       magnitude (resultant-magnitude components)]
       [magnitude direction])))
 
+(defn velocity [distance elapsedTime] (double (/ distance elapsedTime)))
+(defn distance [velocity elapsedTime] (* velocity elapsedTime))
+(defn elapsedTime [velocity distance] (double (/ distance velocity)))
+
+(defn slope [y2 y1 x2 x1] (double (/ (- y2 y1) (- x2 x1))))
+
+
+;; ----- Schaum's Problems ----- ;;
+
+;; 1.1 
+(println "1.1: " (distance 0.25 240))
+;; 1.2 
+(println "1.2: " (velocity 10000 1800))
+; 1.3 
+(println "1.3: " (elapsedTime 4.25 17))
+; 1.4
+(println "1.4: " (* 0.2 0.00001 3600 24 365))
+; 1.5 
+(println "1.5: " (slope 5 1 10 2))
+; 1.6 
+(println "1.6: " (resultant-magnitude [6 8]))
+; 1.7
+(println "1.7a: " (velocity 200 25))
+(println "1.7b: " (velocity 0 25))
+; 1.8
+(println "1.8: " (compute-resultant [2 40] [4 127]))
+; 1.9
+(println "1.9: " (compute-components [25 210]))
+; 1.10
+(println "1.10a: " (compute-components [2 40]))
+(println "1.10b: " (compute-components [4 127]))
+; 1.11 
+(println "1.11: " (compute-resultant [30 30] [20 140]))
+; 1.12 and 1.13 are graphical and not in scope
+; 1.14
+(println "1.15: "  )
+
 
 ;; -----------TESTS----------- ;;
 
